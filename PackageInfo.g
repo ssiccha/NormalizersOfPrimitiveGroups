@@ -72,7 +72,7 @@ Dependencies := rec(
 
 AvailabilityTest := ReturnTrue,
 
-TestFile := "tst/testall.g",
+TestFile := "tst/teststandard.g",
 
 #Keywords := [ "TODO" ],
 

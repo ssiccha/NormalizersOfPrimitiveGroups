@@ -5,6 +5,8 @@
 #!
 #! NormalizersOfPrimitiveGroups is a package which does some
 #! interesting and cool things
+#! For the correctness of the algorithms see
+#!   TODO some arxiv upload
 #!
 #! @Chapter Functionality
 #!
@@ -13,7 +15,7 @@
 #!
 #! This section will describe the example
 #! methods of NormalizersOfPrimitiveGroups
-
+#!
 #! @Description
-#!   Insert documentation for your function here
-DeclareGlobalFunction( "NormalizersOfPrimitiveGroups_Example" );
+#!   test documentation
+DeclareGlobalName("NormalizerInSymmetricGroupOfPrimitiveGroup");
