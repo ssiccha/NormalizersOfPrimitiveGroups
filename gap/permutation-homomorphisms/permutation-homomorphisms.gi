@@ -1,3 +1,7 @@
+#
+# NormalizersOfPrimitiveGroups:
+# A package to compute normalizers of primitive groups
+#
 InstallMethod(PushforwardActionByPointMap,
 "for a mapping and a function",
 [IsMapping, IsFunction],

@@ -1,3 +1,8 @@
+#
+# NormalizersOfPrimitiveGroups:
+# A package to compute normalizers of primitive groups
+#
+# A function by Sebastian Gutsche
 GET_REAL_TIME_OF_FUNCTION_CALL := function ( method, args, options... )
     local first_time, firstSeconds, firstMicroSeconds, result, second_time,
         secondSeconds, secondMicroSeconds, seconds, microSeconds, total;

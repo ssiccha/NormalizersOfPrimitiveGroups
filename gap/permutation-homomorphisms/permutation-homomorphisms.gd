@@ -1,3 +1,7 @@
+#
+# NormalizersOfPrimitiveGroups:
+# A package to compute normalizers of primitive groups
+#
 DeclareOperation("PushforwardActionByPointMap", [IsMapping, IsFunction]);
 
 DeclareGlobalName("MappingByPermutation");

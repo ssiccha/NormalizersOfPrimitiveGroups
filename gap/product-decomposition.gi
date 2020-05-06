@@ -1,3 +1,7 @@
+#
+# NormalizersOfPrimitiveGroups:
+# A package to compute normalizers of primitive groups
+#
 # TODO
 # Use StrictlyHomogeneousProductDecompositionViaConjugation to construct
 # - the lift the normaliser of the component,
