@@ -4,7 +4,7 @@
 #
 # Reading the implementation part of the package.
 ReadPackage("NormalizersOfPrimitiveGroups",
-            "gap/product-action.g");
+            "gap/actions-on-tuples.g");
 ReadPackage("NormalizersOfPrimitiveGroups",
             "gap/permutation-homomorphisms/permutation-homomorphisms.gi");
 ReadPackage("NormalizersOfPrimitiveGroups",
