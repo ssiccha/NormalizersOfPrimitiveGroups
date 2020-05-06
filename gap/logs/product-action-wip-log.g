@@ -5,11 +5,13 @@ gap> T := AlternatingGroup(5);;
 gap> S3 := SymmetricGroup(3);;
 gap> W := WreathProductProductAction(T, S3);;
 gap> random := Random(SymmetricGroup(5 ^ 3));; G := W ^ random;;
-gap> canonizer := WeakCanonizerOfPrimitiveGroup(G);;
+gap> r := WeakCanonizerOfPrimitiveGroup(G);;
+gap> canonizer := r.conjugatorToWeakCanonicalForm;;
 gap> G ^ canonizer = W;
 true
 gap> random := Random(SymmetricGroup(5 ^ 3));; G := W ^ random;;
-gap> canonizer := WeakCanonizerOfPrimitiveGroup(G);;
+gap> r := WeakCanonizerOfPrimitiveGroup(G);;
+gap> canonizer := r.conjugatorToWeakCanonicalForm;;
 gap> G ^ canonizer = W;
 true
 
