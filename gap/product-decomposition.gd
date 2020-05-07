@@ -11,6 +11,20 @@ DeclareAttribute("ProductDecompositionOfPermGroup", IsPermGroup);
 DeclareAttribute("StrictlyHomogeneousProductDecompositionOfPermGroup",
                  IsPermGroup);
 
+# TODO: use these
+DeclareProperty("IsInWeakCanonicalForm", IsPermGroup);
+
+DeclareAttribute("WCFSocleComponent",
+                 IsPermGroup and IsInWeakCanonicalForm);
+DeclareAttribute("WCFTopGroup",
+                 IsPermGroup and IsInWeakCanonicalForm);
+DeclareAttribute("WCFTopGroupLift",
+                 IsPermGroup and IsInWeakCanonicalForm);
+DeclareAttribute("WCFSocleComponentNormalizer",
+                 IsPermGroup and IsInWeakCanonicalForm);
+DeclareAttribute("WCFSocleComponentNormalizerLift",
+                 IsPermGroup and IsInWeakCanonicalForm);
+
 DeclareGlobalName("WeakCanonizerOfPrimitiveGroup");
 
 DeclareGlobalName("NaturalProductDecomposition");

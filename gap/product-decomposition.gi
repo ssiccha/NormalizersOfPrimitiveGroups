@@ -28,9 +28,40 @@ NORM_SOC_ComplementOfSocleFactors := function(factors, indices)
     return complement;
 end;
 
-SimpleFactorsWithConjugatorsOfSocleOfPrimitiveGroup := function(G)
-    local movedPoints, soc, compSeriesSoc, l, R, xsetOfSimpleFactors,
-        rtForSimpleFactors, conjugators, simpleFactors, complement;
+FindConjugatorsHelperFunction := function(G, R, l)
+    local simpleSubgroups, conjugators, g, i, conjugateR, foundNew, j;
+    simpleSubgroups := ListWithIdenticalEntries(l, 0);
+    simpleSubgroups[1] := R;
+    conjugators := ListWithIdenticalEntries(l, 0);
+    conjugators[1] := ();
+    g := ();
+    i := 1;
+    # TODO instead of R ^ g = simpleSubgroups[j] test whether
+    # smallest orbit of R ^ g = smallest orbit simpleSubgroups[j]
+    while not i = l do
+        g := PseudoRandom(G);
+        conjugateR := R ^ g;
+        foundNew := true;
+        for j in [1 .. i] do
+            if conjugateR = simpleSubgroups[j] then
+                foundNew := false;
+                break;
+            fi;
+        od;
+        if foundNew then
+            i := i + 1;
+            simpleSubgroups[i] := conjugateR;
+            conjugators[i] := g;
+        fi;
+    od;
+    SetMinimalNormalSubgroups(Socle(G), simpleSubgroups);
+    conjugators := List(conjugators, x -> x ^ -1);
+    return rec(simpleSubgroups := simpleSubgroups, conjugators := conjugators);
+end;
+
+SimpleSubgroupsWithConjugatorsOfSocleOfPrimitiveGroup := function(G)
+    local movedPoints, soc, compSeriesSoc, l, R, xsetOfSimpleSubgroups,
+        rtForSimpleSubgroups, conjugators, simpleSubgroups, complement;
     # TODO if necessary conjugate G such that it acts on [1 .. n]
     # store moved points as range if possible
     if IsRange(MovedPoints(G)) then
@@ -40,7 +71,7 @@ SimpleFactorsWithConjugatorsOfSocleOfPrimitiveGroup := function(G)
         movedPoints := MovedPoints(G);
     fi;
     soc := Socle(G);
-    # Compute the minimal normal subgroups of the socle
+    # Compute one minimal normal subgroup of the socle
     compSeriesSoc := CompositionSeries(soc);
     l := Length(compSeriesSoc) - 1;
     if l = 1 then
@@ -48,17 +79,7 @@ SimpleFactorsWithConjugatorsOfSocleOfPrimitiveGroup := function(G)
         return fail;
     fi;
     R := compSeriesSoc[l];
-    # TODO Maybe force GAP to use OrbitsDomain? Or does this also dispatch to a
-    # normalizer computation somehow?
-    # TODO find a way to tell GAP that I know the number of simple factors
-    xsetOfSimpleFactors := ConjugacyClassSubgroups(G, R);
-    rtForSimpleFactors :=
-        RightTransversal(G, StabilizerOfExternalSet(xsetOfSimpleFactors));
-    conjugators := AsList(rtForSimpleFactors);
-    simpleFactors := List(conjugators, x -> R ^ x);
-    SetMinimalNormalSubgroups(soc, simpleFactors);
-    conjugators := List(conjugators, x -> x ^ -1);
-    return rec(simpleFactors := simpleFactors, conjugators := conjugators);
+    return FindConjugatorsHelperFunction(G, R, l);
 end;
 
 # Ref: Lemma 7.1.5
@@ -73,7 +94,7 @@ StrictlyHomogeneousProductDecompositionViaConjugation :=
     # Compute projection for the first simple factor
     Q := MappingByPreImages(Domain(movedPoints), myDelta);
     # g is a list of group elements of G such that g[i] maps the i-th simple
-    # factor (simpleFactors[i]) to the first one.
+    # factor (simpleSubgroups[i]) to the first one.
     conjugatorMaps :=
         List(conjugators,
              gi -> MappingByPermutation(movedPoints, movedPoints, gi));
@@ -115,8 +136,8 @@ end;
 # MovedPoints(G) needs to be [1 .. LargestMovedPoint(G)]
 # T is the socle component of G
 NormalizerOfSocleForWeaklyCanonicalPrimitivePA := function(G, T)
-    local n, m, d, NT, gensNT, gensLiftNT, LiftNT, Sd, gensSd, gensLiftSd,
-        LiftSd, normalizerOfSocle;
+    local n, m, d, NT, gensNT, gensLiftNT, liftNT, Sd, gensSd, gensLiftSd,
+        liftSd, normalizerOfSocle;
     n := LargestMovedPoint(G);
     m := LargestMovedPoint(T);
     d := LogInt(n, m);
@@ -131,56 +152,65 @@ NormalizerOfSocleForWeaklyCanonicalPrimitivePA := function(G, T)
             g, 1, m, d
         )
     );
+    liftNT := Group(gensLiftNT);
+    #TODO turn all checks into asserts as below
     #TODO remove check
-    LiftNT := Group(gensLiftNT);
-    if not Size(LiftNT) = Size(NT) then
+    if not Size(liftNT) = Size(NT) then
         ErrorNoReturn("TODO: this shouldn't have happened!");
     fi;
     Sd := SymmetricGroup(d);
     gensSd := GeneratorsOfGroup(Sd);
+    # TODO document that the map gensSd -> gensLiftSd extends to iso
+    # Sd -> liftSd
+    # same for NT -> liftNT
     gensLiftSd := List(
         gensSd,
         g -> PermPermutingComponentsUnderNaturalProductIdentification(
             g, m, d
         )
     );
+    liftSd := Group(gensLiftSd);
     #TODO remove check
-    LiftSd := Group(gensLiftSd);
-    if not Size(LiftSd) = Size(Sd) then
+    if not Size(liftSd) = Size(Sd) then
         ErrorNoReturn("TODO: this shouldn't have happened!");
     fi;
     normalizerOfSocle := Group(Concatenation(gensLiftNT, gensLiftSd));
-    #TODO remove check
-    if not Size(normalizerOfSocle) = Size(NT) ^ d * Size(Sd) then
-        ErrorNoReturn("TODO: this shouldn't have happened!");
-    fi;
+    Assert(1, Size(normalizerOfSocle) = Size(NT) ^ d * Size(Sd));
     SetSize(normalizerOfSocle, Size(NT) ^ d * Size(Sd));
+    SetIsInWeakCanonicalForm(normalizerOfSocle, true);
+    SetWCFSocleComponent(normalizerOfSocle, T);
+    SetWCFSocleComponentNormalizer(normalizerOfSocle, NT);
+    SetWCFSocleComponentNormalizerLift(normalizerOfSocle, liftNT);
+    SetWCFTopGroup(normalizerOfSocle, Sd);
+    SetWCFTopGroupLift(normalizerOfSocle, liftSd);
     return normalizerOfSocle;
 end;
 
 BindGlobal("WeakCanonizerOfPrimitiveGroup",
 function(G)
-    local tmp, simpleFactors, conjugators, l, complement, productDec,
+    local tmp, simpleSubgroups, conjugators, l, complement, productDec,
         conjugatorToWeakCanonicalForm, actionOnFirstComponent, socleComponent,
         ardActionByPoin;
     if not IsPrimitive(G)  then
         ErrorNoReturn("WeakCanonizerOfPrimitiveGroup: ",
                       "<G> must be primitive");
     fi;
-    tmp := SimpleFactorsWithConjugatorsOfSocleOfPrimitiveGroup(G);
-    simpleFactors := tmp.simpleFactors;
+    tmp := SimpleSubgroupsWithConjugatorsOfSocleOfPrimitiveGroup(G);
+    simpleSubgroups := tmp.simpleSubgroups;
     conjugators := tmp.conjugators;
-    l := Length(simpleFactors);
+    l := Length(simpleSubgroups);
     # PA type
     if ONanScottType(G) = "4c" then
-        complement := NORM_SOC_ComplementOfSocleFactors(simpleFactors, [1]);
+        # TODO: NORM_SOC -> NORM_PRIM
+        complement := NORM_SOC_ComplementOfSocleFactors(simpleSubgroups, [1]);
         productDec := StrictlyHomogeneousProductDecompositionViaConjugation(
             complement, conjugators
         );
     # SD type
     # TODO: trivial case l = 1
     elif ONanScottType(G) = "3b" and l > 2 then
-        complement := NORM_SOC_ComplementOfSocleFactors(simpleFactors, [1, l]);
+        complement := NORM_SOC_ComplementOfSocleFactors(simpleSubgroups, [1, l]);
+        # TODO do not remove!!
         Remove(conjugators, l);
         productDec := StrictlyHomogeneousProductDecompositionViaConjugation(
             complement, conjugators
@@ -189,15 +219,15 @@ function(G)
         ErrorNoReturn("WeakCanonizerOfPrimitiveGroup: ",
                       "case not yet implemented");
     fi;
+    # TODO use pragmas to measure the time of only this call?
     conjugatorToWeakCanonicalForm :=
         ConjugatorFromProductDecompositionUnderNaturalProductIdentification(
             productDec
         );
-    # TODO finish
     # Compute socleComponent
     actionOnFirstComponent := PushforwardActionByPointMap(productDec[1]);
     socleComponent := Action(
-        simpleFactors[1],
+        simpleSubgroups[1],
         [1 .. Length(List(Range(productDec[1])))],
         actionOnFirstComponent
     );

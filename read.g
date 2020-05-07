@@ -6,6 +6,8 @@
 ReadPackage("NormalizersOfPrimitiveGroups",
             "gap/actions-on-tuples.g");
 ReadPackage("NormalizersOfPrimitiveGroups",
+            "gap/translation-product-to-imprimitive.gi");
+ReadPackage("NormalizersOfPrimitiveGroups",
             "gap/permutation-homomorphisms/permutation-homomorphisms.gi");
 ReadPackage("NormalizersOfPrimitiveGroups",
             "gap/product-decomposition.gi");
