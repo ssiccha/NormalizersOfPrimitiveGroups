@@ -1,3 +1,5 @@
+#@local tups1, tups2, tups3
+
 # Action on I-th Component
 # Corner cases and errors
 gap> PermActionOnIthComponentUnderNaturalProductIdentification(1, 1, 2, 2);
