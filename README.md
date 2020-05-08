@@ -24,6 +24,8 @@ Note: `NormalizerInSymmetricGroupOfPrimitiveGroup` and
 `WeakCanonizerOfPrimitiveGroup` are currently **only** implemented for groups
 of type PA.
 
+Note: The package can only be loaded using the master branch of GAP.
+
 ## Example
 
 The following is an example session using this package to compute for a
@@ -69,6 +71,14 @@ Run the `makedoc.g` script to build the documentation.
 
 Note: It is currently not possible to build the documentation due to
 incompatibilities between AutoDoc and the current GAP master branch.
+
+## Tests
+
+For the package tests run any of the files
+`tst/teststandard.g`
+`tst/teststandard-with-asserts.g`
+`tst/testall.g`
+with the current master branch of GAP.
 
 ## Contact
 
