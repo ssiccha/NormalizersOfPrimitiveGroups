@@ -40,7 +40,8 @@ gap> LoadPackage("NormalizersOfPrimitiveGroups");;
 gap> T := AlternatingGroup(5);;
 gap> m := NrMovedPoints(T);;
 gap> d := 2;;
-gap> WP := WreathProductProductAction(T, Group(SymmetricGroup(d).1));;
+gap> top := Group((1,2));
+gap> WP := WreathProductProductAction(T, top);;
 # Conjugate this group with a random permutation
 gap> random := Random(SymmetricGroup(m ^ d));;
 gap> G := WP ^ random;;
@@ -63,6 +64,18 @@ gap> GeneratorsOfGroup(G ^ r.conjugatorToWeakCanonicalForm);
 gap> N := NormalizerInSymmetricGroupOfPrimitiveGroup(G);;
 gap> N = Normalizer(SymmetricGroup(25), G);
 true
+```
+
+## Generating more examples
+If you want more examples of PA type try the following code.
+This does not generate all PA type groups with a given socle though, since
+subgroups of those groups can still be primitive.
+```
+gap> m := 5;;
+gap> d := 3;;
+gap> T := OnePrimitiveGroup(NrMovedPoints, m, ONanScottType, "2");;
+gap> top := OneTransitiveGroup(NrMovedPoints, d);;
+gap> WP := WreathProductProductAction(T, top);;
 ```
 
 ## Documentation
