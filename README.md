@@ -3,6 +3,8 @@
 `NormalizersOfPrimitiveGroups` is a [GAP](https://www.gap-system.org/) package
 to compute normalizers of primitive groups.
 
+Note: Currently, the package can only be loaded using the master branch of GAP.
+
 You can use it as follows:
 
 1. Download `NormalizersOfPrimitiveGroups` and extract it into a GAP `pkg`
@@ -23,8 +25,6 @@ You can use it as follows:
 Note: `NormalizerInSymmetricGroupOfPrimitiveGroup` and
 `WeakCanonizerOfPrimitiveGroup` are currently **only** implemented for groups
 of type PA.
-
-Note: The package can only be loaded using the master branch of GAP.
 
 ## Example
 
