@@ -1,0 +1,38 @@
+@Chapter The NormalizersOfPrimitiveGroups package 
+@Section Introduction
+
+`NormalizersOfPrimitiveGroups` is a [GAP](https://www.gap-system.org/) package
+to compute normalizers of primitive groups.
+
+For the correctness of the algorithms see my diss:
+  TODO some arxiv upload
+
+Note: Currently, the package can only be loaded using the master branch of GAP.
+
+@Section Installation
+
+You can install and use the package as follows:
+
+1. Download `NormalizersOfPrimitiveGroups` and extract it into a GAP `pkg`
+   directory.
+
+2. Start GAP and load the `NormalizersOfPrimitiveGroups` package:
+
+    LoadPackage("NormalizersOfPrimitiveGroups");
+
+@Chapter Normalizers of primitive groups
+
+Note: **only** implemented for groups of type PA.
+
+3. You can use the function `NormalizerInSymmetricGroupOfPrimitiveGroup` to
+   compute the normalizer of a primitive group inside the symmetric group on
+   the same number of points.
+
+@Chapter Weak canonical forms
+
+Note: **only** implemented for groups of type PA.
+
+4. You can use the function `WeakCanonizerOfPrimitiveGroup` to compute a
+   permutation which conjugates a given primitive group into weak canonical
+   form and the corresponding socle-component.
+
