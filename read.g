@@ -10,4 +10,8 @@ ReadPackage("NormalizersOfPrimitiveGroups",
 ReadPackage("NormalizersOfPrimitiveGroups",
             "gap/product-decomposition.gi");
 ReadPackage("NormalizersOfPrimitiveGroups",
+            "gap/weak-canonical-form.gi");
+ReadPackage("NormalizersOfPrimitiveGroups",
+            "gap/normalizer-of-socle.gi");
+ReadPackage("NormalizersOfPrimitiveGroups",
             "gap/normalizer-of-primitive.gi");
