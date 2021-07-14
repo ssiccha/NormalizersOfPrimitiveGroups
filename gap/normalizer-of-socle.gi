@@ -11,7 +11,7 @@ NormalizerOfSocleForWeaklyCanonicalPrimitivePA := function(n, T)
     m := LargestMovedPoint(T);
     d := LogInt(n, m);
     if not n = m ^ d then
-        ErrorNoReturn("TODO: not n = m ^ d");
+        ErrorNoReturn("<n> must be a power of <m>");
     fi;
     NT := Normalizer(SymmetricGroup(m), T);
     gensNT := GeneratorsOfGroup(NT);
