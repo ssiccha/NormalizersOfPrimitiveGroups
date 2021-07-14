@@ -5,10 +5,9 @@
 # NormalizerOfSocleForWeaklyCanonicalPrimitive(G);
 # MovedPoints(G) needs to be [1 .. LargestMovedPoint(G)]
 # T is the socle component of G
-NormalizerOfSocleForWeaklyCanonicalPrimitivePA := function(G, T)
-    local n, m, d, NT, gensNT, gensLiftNT, LiftNT, Sd, gensSd, gensLiftSd,
+NormalizerOfSocleForWeaklyCanonicalPrimitivePA := function(n, T)
+    local m, d, NT, gensNT, gensLiftNT, LiftNT, Sd, gensSd, gensLiftSd,
         LiftSd, normalizerOfSocle;
-    n := LargestMovedPoint(G);
     m := LargestMovedPoint(T);
     d := LogInt(n, m);
     if not n = m ^ d then

@@ -9,9 +9,8 @@ function(G)
     # product action of almost simple
     if type = "4c" then
         tmp := WeakCanonizerOfPrimitiveGroup(G);
-        WeaklyCanonicalG := G ^ tmp.conjugatorToWeakCanonicalForm;
         socleComponent := tmp.socleComponent;;
-        M := NormalizerOfSocleForWeaklyCanonicalPrimitivePA(WeaklyCanonicalG,
+        M := NormalizerOfSocleForWeaklyCanonicalPrimitivePA(LargestMovedPoint(G),
                                                             socleComponent);
         M := M ^ (tmp.conjugatorToWeakCanonicalForm ^ -1);
     else

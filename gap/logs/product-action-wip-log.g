@@ -24,7 +24,7 @@ gap> random := Random(SymmetricGroup(m ^ d));; G := WP ^ random;;
 gap> tmpCanonize := WeakCanonizerOfPrimitiveGroup(G);;
 gap> WCG := G ^ tmpCanonize.conjugatorToWeakCanonicalForm;;
 gap> socleComponent := tmpCanonize.socleComponent;;
-gap> M := NormalizerOfSocleForWeaklyCanonicalPrimitivePA(WCG, socleComponent);;
+gap> M := NormalizerOfSocleForWeaklyCanonicalPrimitivePA(LargestMovedPoint(WCG), socleComponent);;
 gap> IsSubgroup(M, WCG);
 true
 gap> IsNormal(M, Socle(WCG));
@@ -48,7 +48,7 @@ gap> tmpCanonize := WeakCanonizerOfPrimitiveGroup(G);; time;
 gap> WCG := G ^ tmpCanonize.conjugatorToWeakCanonicalForm;;
 gap> socleComponent := tmpCanonize.socleComponent;;
 # Needs to compute normalizer of socle component, is this expensive?
-gap> M := NormalizerOfSocleForWeaklyCanonicalPrimitivePA(WCG, socleComponent);;
+gap> M := NormalizerOfSocleForWeaklyCanonicalPrimitivePA(LargestMovedPoint(WCG), socleComponent);;
 gap> time;
 216
 gap> IsSubgroup(M, WCG);
