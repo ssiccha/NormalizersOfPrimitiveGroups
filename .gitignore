@@ -26,3 +26,7 @@
 
 /tmp/
 /gh-pages/
+
+
+# Ctags
+/tags
