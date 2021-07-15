@@ -52,9 +52,9 @@ end;
 NormalizerOfSocleForWeaklyCanonicalPrimitiveSD := function(n, T)
     local m, dMinusOne, TRightRegular, gensTRightRegular,
         gensLiftTRightRegular, TLeftRegular, gensDiagonalTLeftRegular,
-        gensSocle, SdMinusOne, gensSdMinusOne, gensLiftSdMinusOne,
+        SdMinusOne, gensSdMinusOne, gensLiftSdMinusOne,
         normalizerOfSocle;
-    m := LargestMovedPoint(T);
+    m := Size(T);
     dMinusOne := LogInt(n, m);
     if not n = m ^ dMinusOne then
         ErrorNoReturn("<n> must be a power of <m>");
@@ -73,8 +73,9 @@ NormalizerOfSocleForWeaklyCanonicalPrimitiveSD := function(n, T)
         ErrorNoReturn("TODO: this shouldn't have happened!");
     fi;
     # T in diagonal left regular action on all components
-    TLeftRegular := Image(ActionHomomorphism(TRightRegular, TRightRegular,
-                                             OnLeftInverse, "surjective"));
+    leftActionHomomorphism := ActionHomomorphism(TRightRegular, TRightRegular,
+                                                 OnLeftInverse, "surjective");
+    TLeftRegular := Image(leftActionHomomorphism);
     gensDiagonalTLeftRegular := List(
         GeneratorsOfGroup(TLeftRegular),
         gen -> Product([1..dMinusOne],
@@ -82,12 +83,37 @@ NormalizerOfSocleForWeaklyCanonicalPrimitiveSD := function(n, T)
                            gen, i, m, dMinusOne
                        ))
     );
-    gensSocle := Concatenation(gensLiftTRightRegular, gensDiagonalTLeftRegular);
     # The diagonal automorphisms
-    # TODO
+    autOfRightRegular := AutomorphismGroup(TRightRegular);
+    # BEGIN
+    # Construct Aut(T) acting diagonally on the socle
+    # TODO: only if Out(T) is non-trivial.
+    mapAutOfRightRegularToAutOfLeftRegular
+        := x -> CompositionMapping(leftActionHomomorphism,
+                                   x,
+                                   InverseGeneralMapping(leftActionHomomorphism));
+
+    # first some sanity checks
+    innerOfRightRegular := autGroup.1;;
+    conjOfInnerOfLeftRegular := ConjugatorOfConjugatorIsomorphism(mapAutOfRightRegularToAutOfLeftRegular(innerOfRightRegular));;
+    conjOfInnerOfLeftRegular in A6left;
+    Image(leftActionHomomorphism, ConjugatorOfConjugatorIsomorphism(innerOfRightRegular)) = conjOfInnerOfLeftRegular;
+
+    outGens := Filtered(GeneratorsOfGroup(autGroup), x -> not IsInnerAutomorphism(x));;
+    out := outGens[1];;
+    outDiag := GroupHomomorphismByImages(TL, TL, gensTL, Concatenation(List(gensT, x -> Image(out, x)), List(gensL, x -> Image(mapAutOfRightRegularToAutOfLeftRegular(out), x))));;
+    outDiagPerm := ConjugatorOfConjugatorIsomorphism(outDiag);;
+    actionOnDPD := ActionOnDirectProductDomain([OnPoints, OnPoints]);;
+    outDiagPermOnDPD := Permutation(outDiagPerm, dpd, actionOnDPD);;
+    soc ^ outDiagPermOnDPD = soc;
+    diagonalA6left ^ outDiagPermOnDPD = diagonalA6left;
+    # END
     # The top group TODO, this is only a part
     SdMinusOne := SymmetricGroup(dMinusOne);
     gensSdMinusOne := GeneratorsOfGroup(SdMinusOne);
+    if dMinusOne = 1 then
+        gensSdMinusOne := [()];
+    fi;
     gensLiftSdMinusOne := List(
         gensSdMinusOne,
         g -> PermPermutingComponentsUnderNaturalProductIdentification(
@@ -95,7 +121,7 @@ NormalizerOfSocleForWeaklyCanonicalPrimitiveSD := function(n, T)
         )
     );
     #TODO remove check
-    if not Size(Group(gensLiftSdMinusOne)) = Size(Sd) then
+    if not Size(Group(gensLiftSdMinusOne)) = Size(SdMinusOne) then
         ErrorNoReturn("TODO: this shouldn't have happened!");
     fi;
     # Now the normalizer of the socle
@@ -107,8 +133,7 @@ NormalizerOfSocleForWeaklyCanonicalPrimitiveSD := function(n, T)
     #fi;
     #SetSize(normalizerOfSocle, Size(NT) ^ dMinusOne * Size(SdMinusOne));
     return rec(
-        normalizerOfSocle := normalizerOfSocle,
-        gensSocle := gensSocle,
+        #normalizerOfSocle := normalizerOfSocle,
         gensLiftTRightRegular := gensLiftTRightRegular,
         gensDiagonalTLeftRegular := gensDiagonalTLeftRegular,
         gensLiftSdMinusOne := gensLiftSdMinusOne

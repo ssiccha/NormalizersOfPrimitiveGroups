@@ -127,13 +127,14 @@ soc ^ topElm = soc;
 # Only if Out(T) is non-trivial.
 autGroup := AutomorphismGroup(A6right);;
 leftActionHom := ActionHomomorphism(A6right, A6right, OnLeftInverse, "surjective");;
+# Maps automorphisms of A6right to automorphisms of A6left
 translateAutRightToAutLeft := x -> CompositionMapping(leftActionHom, x, InverseGeneralMapping(leftActionHom));
 
 # first some sanity checks
-inn := autGroup.1;;
-innInd := ConjugatorOfConjugatorIsomorphism(translateAutRightToAutLeft(inn));;
-innInd in A6left;
-Image(leftActionHom, ConjugatorOfConjugatorIsomorphism(inn)) = innInd;
+innerOfRightRegular := autGroup.1;;
+conjOfInnerOfLeftRegular := ConjugatorOfConjugatorIsomorphism(translateAutRightToAutLeft(innerOfRightRegular));;
+conjOfInnerOfLeftRegular in A6left;
+Image(leftActionHom, ConjugatorOfConjugatorIsomorphism(innerOfRightRegular)) = conjOfInnerOfLeftRegular;
 
 outGens := Filtered(GeneratorsOfGroup(autGroup), x -> not IsInnerAutomorphism(x));;
 out := outGens[1];;
