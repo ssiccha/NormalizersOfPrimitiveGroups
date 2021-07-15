@@ -6,7 +6,7 @@
 # MovedPoints(G) needs to be [1 .. LargestMovedPoint(G)]
 # T is the socle component of G
 NormalizerOfSocleForWeaklyCanonicalPrimitivePA := function(n, T)
-    local m, d, NT, gensNT, gensLiftNT, LiftNT, Sd, gensSd, gensLiftSd,
+    local m, d, NT, gensNT, gensLiftNT, Sd, gensSd, gensLiftSd,
         LiftSd, normalizerOfSocle;
     m := LargestMovedPoint(T);
     d := LogInt(n, m);
@@ -14,6 +14,7 @@ NormalizerOfSocleForWeaklyCanonicalPrimitivePA := function(n, T)
         ErrorNoReturn("<n> must be a power of <m>");
     fi;
     NT := Normalizer(SymmetricGroup(m), T);
+    # Construct NT acting on the first component
     gensNT := GeneratorsOfGroup(NT);
     gensLiftNT := List(
         gensNT,
@@ -22,10 +23,10 @@ NormalizerOfSocleForWeaklyCanonicalPrimitivePA := function(n, T)
         )
     );
     #TODO remove check
-    LiftNT := Group(gensLiftNT);
-    if not Size(LiftNT) = Size(NT) then
+    if not Size(Group(gensLiftNT)) = Size(NT) then
         ErrorNoReturn("TODO: this shouldn't have happened!");
     fi;
+    # Construct the top group
     Sd := SymmetricGroup(d);
     gensSd := GeneratorsOfGroup(Sd);
     gensLiftSd := List(
