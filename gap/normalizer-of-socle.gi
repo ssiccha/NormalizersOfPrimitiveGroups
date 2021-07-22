@@ -58,7 +58,8 @@ NormalizerOfSocleForWeaklyCanonicalPrimitiveSD := function(n, T)
         liftPermsInducingDiagonalOuters, gensSdMinusOne, gensLiftSdMinusOne,
         imgList, i, rho_x_1, lambda_x_1, highestTerm, iteratorTuples, point,
         tuple, imgTuple,
-        gensFullTopGroup, psi;
+        gensFullTopGroup, psi,
+        gensNormalizerOfSocle, normalizerOfSocle;
     m := Size(T);
     dMinusOne := LogInt(n, m);
     if not n = m ^ dMinusOne then
@@ -223,21 +224,23 @@ NormalizerOfSocleForWeaklyCanonicalPrimitiveSD := function(n, T)
     od;
     gensFullTopGroup := Concatenation(gensLiftSdMinusOne, [PermList(imgList)]);
 
-    # Now the normalizer of the socle
-    # TODO: finish this
-    #normalizerOfSocle := Group(Concatenation(gensSocle, gensLiftSdMinusOne));
-    #TODO remove check
-    #if not Size(normalizerOfSocle) = Size(NT) ^ dMinusOne * Size(SdMinusOne) then
-    #    ErrorNoReturn("TODO: this shouldn't have happened!");
-    #fi;
-    #SetSize(normalizerOfSocle, Size(NT) ^ dMinusOne * Size(SdMinusOne));
+    # Now the normalizer of the socle. The generators gensDiagonalTLeftRegular
+    # are not really needed, I just add them since they can be used to do some
+    # sanity checks.
+    gensNormalizerOfSocle := Concatenation(
+        gensLiftTRightRegular,
+        gensDiagonalTLeftRegular,
+        liftPermsInducingDiagonalOuters,
+        gensFullTopGroup
+    );
+    normalizerOfSocle := Group(Concatenation(gensSocle, gensLiftSdMinusOne));
+    SetSize(normalizerOfSocle, m ^ (dMinusOne + 1) * Factorial(dMinusOne + 1)
+            * (Size(autOfRightRegular) / m));
     return rec(
-        #normalizerOfSocle := normalizerOfSocle,
         gensLiftTRightRegular := gensLiftTRightRegular,
         gensDiagonalTLeftRegular := gensDiagonalTLeftRegular,
-        gensLiftSdMinusOne := gensLiftSdMinusOne,
+        liftPermsInducingDiagonalOuters := liftPermsInducingDiagonalOuters,
         gensFullTopGroup := gensFullTopGroup,
-        sizeOfSocleNormalizer := m ^ (dMinusOne + 1) * Factorial(dMinusOne + 1)
-            * (Size(autOfRightRegular) / m)
+        normalizerOfSocle := normalizerOfSocle
     );
 end;
