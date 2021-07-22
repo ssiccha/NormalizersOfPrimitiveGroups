@@ -12,3 +12,8 @@ gap> DiagonalTLeftRegular := Group(res.gensDiagonalTLeftRegular);; Size(last);
 gap> LiftTRightRegular ^ transpo = DiagonalTLeftRegular;
 true
 
+
+# A more compact test
+gap> result := NormalizerOfSocleForWeaklyCanonicalPrimitiveSD(60^3, AlternatingGroup(5));
+gap> normalizerOfSocle := Group(GeneratorsOfGroup(result.normalizerOfSocle));
+gap> Size(normalizerOfSocle) = Size(result.normalizerOfSocle);
