@@ -60,6 +60,17 @@ PermActionOnIthComponentUnderNaturalProductIdentification :=
     return PermList(imgList);
 end;
 
+# For the identification of tuples with numbers see
+# PermActionOnIthComponentUnderNaturalProductIdentification.
+NORM_SOC_TupleToMAdicWithOffset := function(tuple, m, d)
+    local result, i;
+    result := 0;
+    for i in [1 .. d] do
+        result := result * m + tuple[i] - 1;
+    od;
+    return result + 1;
+end;
+
 # For a definition of the natural product identification see
 # PermActionOnIthComponentUnderNaturalProductIdentification
 PermPermutingComponentsUnderNaturalProductIdentification := function(g, m, d)
@@ -89,12 +100,7 @@ PermPermutingComponentsUnderNaturalProductIdentification := function(g, m, d)
     for point in [1 .. nrPoints] do
         tuple := NextIterator(iteratorTuples);
         imgTuple := Permuted(tuple, g);
-        imgPoint := 0;
-        for i in [1 .. d] do
-            imgPoint := imgPoint * m + imgTuple[i] - 1;
-        od;
-        imgPoint := imgPoint + 1;
-        imgList[point] := imgPoint;
+        imgList[point] := NORM_SOC_TupleToMAdicWithOffset(imgTuple, m, d);
     od;
     return PermList(imgList);
 end;
