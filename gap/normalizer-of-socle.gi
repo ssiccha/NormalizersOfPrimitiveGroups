@@ -54,10 +54,11 @@ NormalizerOfSocleForWeaklyCanonicalPrimitiveSD := function(n, T)
         leftActionHomomorphism, TLeftRegular, gensDiagonalTLeftRegular,
         simpleDiagonalSocleOnOneComponent, autOfRightRegular,
         mapAutOfRightRegularToAutOfLeftRegular, outGens,
-        permsInducingDiagonalOuters, sigmaOnLeftRegular, outDiagOnOneComponent,
+        permsInducingDiagonalOuters, psiOnLeftRegular, outDiagOnOneComponent,
         liftPermsInducingDiagonalOuters, gensSdMinusOne, gensLiftSdMinusOne,
-        dMinusOneCycle, liftDMinusOneCycle, gensSocleComponents, socle,
-        transposingAutOfSocle, transposition, gensFullTopGroup, sigma;
+        imgList, i, rho_x_1, lambda_x_1, highestTerm, iteratorTuples, point,
+        tuple, imgTuple,
+        gensFullTopGroup, psi;
     m := Size(T);
     dMinusOne := LogInt(n, m);
     if not n = m ^ dMinusOne then
@@ -91,15 +92,15 @@ NormalizerOfSocleForWeaklyCanonicalPrimitiveSD := function(n, T)
     # First we work on a single component of our n = m ^ dMinusOne points, that
     # is on m points. We only need to do the following construction for
     # generators of the outer automorphism group.
-    #   Take an automorphism sigma of TRightRegular and construct an
+    #   Take an automorphism psi of TRightRegular and construct an
     # automorphism phi of simpleDiagonalSocleOnOneComponent :=
     # <TRightRegular, TLeftRegular> which does the
     # following. Let lambda be leftActionHomomorphism, that is an isomorphism
     # from TRightRegular to TLeftRegular. Let TRightRegular = <X>. Note that
     # TLeftRegular = <lambda(X)>. The automorphism phi maps an x in X to
-    # sigma(x) and a lambda(x) in lambda(X) to
-    # lambda(sigma(x)
-    #     = (lambda o sigma o lambda ^ -1)(lambda(x)).
+    # psi(x) and a lambda(x) in lambda(X) to
+    # lambda(psi(x)
+    #     = (lambda o psi o lambda ^ -1)(lambda(x)).
     # Thus on simpledi the diagonal application of
     simpleDiagonalSocleOnOneComponent := GroupWithGenerators(Concatenation(
         GeneratorsOfGroup(TRightRegular),
@@ -115,26 +116,26 @@ NormalizerOfSocleForWeaklyCanonicalPrimitiveSD := function(n, T)
     outGens := Filtered(GeneratorsOfGroup(autOfRightRegular),
                         x -> not IsInnerAutomorphism(x));
     permsInducingDiagonalOuters := [];
-    for sigma in outGens do
-        sigmaOnLeftRegular := mapAutOfRightRegularToAutOfLeftRegular(sigma);
+    for psi in outGens do
+        psiOnLeftRegular := mapAutOfRightRegularToAutOfLeftRegular(psi);
         outDiagOnOneComponent := GroupHomomorphismByImagesNC(
             simpleDiagonalSocleOnOneComponent,
             simpleDiagonalSocleOnOneComponent,
             GeneratorsOfGroup(simpleDiagonalSocleOnOneComponent),
             Concatenation(
                 List(GeneratorsOfGroup(TRightRegular),
-                     x -> Image(sigma, x)),
+                     x -> Image(psi, x)),
                 List(GeneratorsOfGroup(TLeftRegular),
-                     x -> Image(sigmaOnLeftRegular, x))
+                     x -> Image(psiOnLeftRegular, x))
             )
         );
         Add(permsInducingDiagonalOuters,
             ConjugatorOfConjugatorIsomorphism(outDiagOnOneComponent));
     od;
-    # Take the unique permutation pi of Sym(m) which induces the automorphism
-    # phi of <TRightRegular, TLeftRegular>. Then let this pi act on every
-    # component of the n = m ^ dMinusOne points simultaneously. The result
-    # induces sigma on every component of the socle.
+    # Take the unique permutation of Sym(m) which induces the automorphism
+    # phi of <TRightRegular, TLeftRegular>. Then let this permutation act on
+    # every component of the n = m ^ dMinusOne points simultaneously. The
+    # result induces psi on every component of the socle.
     liftPermsInducingDiagonalOuters := List(
         permsInducingDiagonalOuters,
         g -> Product(
@@ -167,34 +168,60 @@ NormalizerOfSocleForWeaklyCanonicalPrimitiveSD := function(n, T)
     if not Size(Group(gensLiftSdMinusOne)) = Factorial(dMinusOne) then
         ErrorNoReturn("TODO: this shouldn't have happened!");
     fi;
-    # Now the missing permutation to generate the full Sym(d) as a top group.
-    # First explicitly construct all components of the socle.
-    dMinusOneCycle := PermList(Concatenation([2..dMinusOne], [1]));
-    liftDMinusOneCycle :=
-        PermPermutingComponentsUnderNaturalProductIdentification(
-            dMinusOneCycle, m, dMinusOne
-        );
-    # First do all socle components except for the last one.
-    gensSocleComponents := List(
-        [0..dMinusOne-1],
-        i -> OnTuples(gensLiftTRightRegular, liftDMinusOneCycle ^ i)
-    );
-    # Now add the last component.
-    Add(gensSocleComponents, gensDiagonalTLeftRegular);
-    # Now we can compute an automorphism which transposes the first and the
-    # last socle component and fixes all others.
-    socle := Group(Concatenation(gensSocleComponents));
-    SetSize(socle, m ^ (dMinusOne + 1));
-    transposingAutOfSocle := GroupHomomorphismByImagesNC(
-        socle,
-        socle,
-        GeneratorsOfGroup(socle),
-        Concatenation(
-            Permuted(gensSocleComponents, (1,(dMinusOne+1)))
-        )
-    );
-    transposition := ConjugatorOfConjugatorIsomorphism(transposingAutOfSocle);
-    gensFullTopGroup := Concatenation(gensLiftSdMinusOne, [transposition]);
+    # Now construct the missing permutation pi which we need to generate the
+    # full Sym(d) as a top group.
+    # We use the following bijections. One can identify each point of the set
+    # {1..n} with a dMinusOne-tuple of numbers in {1..m} via
+    # NORM_SOC_TupleToMAdicWithOffset.
+    # By identifying each number in {1..m} with an element of T, such a tuple
+    # can be identified with a tuple (x_1, ..., x_dMinusOne) in T ^ dMinusOne.
+    # That tuple in turn is identified with a block [x_1, ..., x_{dMinusOne}, 1]
+    # of a diagonal action domain.
+    # The permutation pi in Sym_n needs to transpose the first and last
+    # component of every block. That is pi maps
+    # [x_1, ..., x_{dMinusOne}, 1]
+    # to
+    # [1, x_2, ..., x_{dMinusOne}, x_1] =
+    #     [x_1 ^ {-1}, x_1 ^ {-1} * x_2, ..., x_1 ^ {-1} * x_{dMinusOne}, 1]
+    # For each x_1 in the first component we now need to do two things: how do
+    # we find the x_i and how do we multiply with x_1 ^ {-1} from the left?
+    # Denote the right regular action homomorphism by rho : T -> TRightRegular.
+    # For each i in {1..m} we can find a unique rho(x_1) in TRightRegular with
+    # 1 ^ rho(x_1) = i via RepresentativeAction.
+    # Denote the left regular action homomorphism by lambda : T -> TLeftRegular.
+    # We have leftActionHomomorphism(rho(x_1)) = lambda(x_1), that is the
+    # permutation induced on {1..m} by multiplying with x_1 ^ -1 from the left.
+    # We build an imgList which we turn into a permutation via PermList.
+    imgList := EmptyPlist(m ^ dMinusOne);
+    # Map a number which represents
+    # (x_1, ..., x_{dMinusOne})
+    # to the number which represents
+    # (x_1 ^ {-1}, x_1 ^ {-1} * x_2, ..., x_1 ^ {-1} * x_{dMinusOne}).
+    for i in [1..m] do
+        #i := testArg;
+        # Find rho(x_1) and lambda(x_1).
+        rho_x_1 := RepresentativeAction(TRightRegular, 1, i);
+        lambda_x_1 := Image(leftActionHomomorphism, rho_x_1);
+        # We handle the first component separately. x_1 is mapped to its
+        # inverse. Take the number corresponding to x_1 ^ -1. Multiply it by
+        # m ^ (dMinusOne - 1) to get the highest term of the numbers
+        # representing tuples which have x_1 ^ -1 in its first component.
+        highestTerm := ((1 ^ lambda_x_1) - 1) * m ^ (dMinusOne - 1);
+        # For each (x_2, ..., x_{dMinusOne}) ...
+        iteratorTuples := IteratorOfTuples([1 .. m], dMinusOne - 1);
+        for point in [1 .. m ^ (dMinusOne - 1)] do
+            tuple := NextIterator(iteratorTuples);
+            # apply lambda(x_1) to each entry of the tuple.
+            imgTuple := List(tuple, j -> j ^ lambda_x_1);
+            imgList[(i - 1) * m ^ (dMinusOne - 1) + point] := highestTerm
+            + NORM_SOC_TupleToMAdicWithOffset(
+                imgTuple,
+                m,
+                dMinusOne - 1
+            );
+        od;
+    od;
+    gensFullTopGroup := Concatenation(gensLiftSdMinusOne, [PermList(imgList)]);
 
     # Now the normalizer of the socle
     # TODO: finish this
@@ -208,7 +235,6 @@ NormalizerOfSocleForWeaklyCanonicalPrimitiveSD := function(n, T)
         #normalizerOfSocle := normalizerOfSocle,
         gensLiftTRightRegular := gensLiftTRightRegular,
         gensDiagonalTLeftRegular := gensDiagonalTLeftRegular,
-        gensSocleComponents := gensSocleComponents,
         gensLiftSdMinusOne := gensLiftSdMinusOne,
         gensFullTopGroup := gensFullTopGroup,
         sizeOfSocleNormalizer := m ^ (dMinusOne + 1) * Factorial(dMinusOne + 1)
