@@ -227,13 +227,12 @@ NormalizerOfSocleForWeaklyCanonicalPrimitiveSD := function(n, T)
     # Now the normalizer of the socle. The generators gensDiagonalTLeftRegular
     # are not really needed, I just add them since they can be used to do some
     # sanity checks.
-    gensNormalizerOfSocle := Concatenation(
+    normalizerOfSocle := Group(Concatenation(
         gensLiftTRightRegular,
         gensDiagonalTLeftRegular,
         liftPermsInducingDiagonalOuters,
         gensFullTopGroup
-    );
-    normalizerOfSocle := Group(Concatenation(gensSocle, gensLiftSdMinusOne));
+    ));
     SetSize(normalizerOfSocle, m ^ (dMinusOne + 1) * Factorial(dMinusOne + 1)
             * (Size(autOfRightRegular) / m));
     return rec(
